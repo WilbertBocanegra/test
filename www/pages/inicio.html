@@ -1,0 +1,237 @@
+<template>
+  <div class="page" data-name="inicio">
+    <div class="navbar no-shadow">
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a href="#" class="link back">
+            <i class="icon icon-back"></i>
+          </a>
+        </div>
+        <div class="title">Inicio de Sesión</div>
+
+      </div>
+    </div>
+    <div class="page-content">
+      <form class="list  no-hairlines-md color-theme-blue" id="inicio">
+        <ul>
+          <li class="item-content item-input">
+            <div class="item-media">
+              <i class="icon f7-icons">email</i>
+            </div>
+            <div class="item-inner">
+              <div class="item-title item-floating-label">Correo</div>
+              <div class="item-input-wrap">
+                <input type="email" name="correo" placeholder="ejemplo@ejemplo.com">
+                <span class="input-clear-button"></span>
+              </div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-media">
+              <i class="icon f7-icons">lock_fill</i>
+            </div>
+            <div class="item-inner">
+              <div class="item-title item-floating-label">Contraseña</div>
+              <div class="item-input-wrap">
+                <input type="password" name="contraseña" placeholder="Tu contraseña">
+                <span class="input-clear-button"></span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </form>
+      <div class="block block-strong no-hairlines margin-left margin-right">
+        <button class="button button-fill button-raised button-round color-green" @click="iniciosesion">Iniciar Sesión</button>
+      </div>
+      <div class="block block-title text-align-center">¿No te has registrado?</div>
+      <p class="text-align-center">Registrate <a href="#" class="link text-color-red popup-open" data-popup=".registro-usuario"><b>aqui</b></a>
+    </div>
+
+    <!-- Registro usuario-->
+    <div class="popup registro-usuario">
+      <div class="page">
+        <div class="navbar no-shadow">
+          <div class="navbar-inner sliding">
+            <div class="title">Registro</div>
+            <div class="right">
+              <a href="#" class="link popup-close">
+                <i class="icon f7-icons">close</i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="page-content">
+          <form class="list  no-hairlines-md color-theme-blue" id="registro">
+            <ul>
+              <li class="item-content item-input">
+                <div class="item-media">
+                  <i class="icon f7-icons">person</i>
+                </div>
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Nombre completo</div>
+                  <div class="item-input-wrap">
+                    <input type="text" name="nombre" placeholder="Tu nombre completo">
+                    <span class="input-clear-button"></span>
+                  </div>
+                </div>
+              </li>
+              <li class="item-content item-input">
+                <div class="item-media">
+                  <i class="icon f7-icons">person</i>
+                </div>
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Matricula</div>
+                  <div class="item-input-wrap">
+                    <input type="text" name="matricula" placeholder="Tu matricula">
+                    <span class="input-clear-button"></span>
+                  </div>
+                </div>
+              </li>
+              <li class="item-content item-input">
+                <div class="item-media">
+                  <i class="icon f7-icons">email</i>
+                </div>
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Correo</div>
+                  <div class="item-input-wrap">
+                    <input type="email" name="correo" placeholder="ejemplo@ejemplo.com">
+                    <span class="input-clear-button"></span>
+                  </div>
+                </div>
+              </li>
+              <li class="item-content item-input">
+                <div class="item-media">
+                  <i class="icon f7-icons">lock_fill</i>
+                </div>
+                <div class="item-inner">
+                  <div class="item-title item-floating-label">Contraseña</div>
+                  <div class="item-input-wrap">
+                    <input type="password" name="contraseña" placeholder="Tu contraseña">
+                    <span class="input-clear-button"></span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </form>
+          <div class="block block-strong no-hairlines margin-left margin-right">
+            <button class="button button-fill button-raised button-round color-green" @click="registrosesion">Registrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Final registro usuario-->
+  </div>
+</template>
+
+<script>
+  return {
+    data: function() {
+      return {
+
+      }
+    },
+    methods: {
+      iniciosesion: () => {
+
+        var usuario = app.form.convertToData('#inicio');
+        var correo = usuario.correo;
+        var contraseña = usuario.contraseña;
+        app.dialog.preloader('Iniciando Sesión', 'red');
+        firebase.auth().signInWithEmailAndPassword(correo, contraseña).then(() => {
+          localStorage.setItem("activo", "activo");
+          app.views.main.router.navigate('/home/');
+          app.dialog.close();
+        }).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // ...
+        });
+
+
+      },
+      registrosesion: () => {
+
+        var datos = app.form.convertToData('#registro');
+        var nombre = datos.nombre;
+        var correo = datos.correo;
+        var contraseña = datos.contraseña;
+        var matricula = datos.matricula;
+        var toastCenter = app.toast.create({
+          text: 'Rellene los campos',
+          position: 'center',
+          closeTimeout: 1000,
+        });
+
+        if (nombre == "" || correo == "" || contraseña == "") {
+          toastCenter.open();
+        } else {
+          app.dialog.preloader('Creando Sesión', 'red');
+
+          firebase.auth().createUserWithEmailAndPassword(correo, contraseña).then(() => {
+
+            var user = firebase.auth().currentUser;
+
+            if (user) {
+
+              db.collection("usuarios").doc(user.uid).set({
+                  nombre: nombre,
+                  correo: correo,
+                  photoURL: "",
+                  grupo: null,
+                  carrera: null,
+                  matricula:matricula
+                })
+                .then(function() {
+                  var user = firebase.auth().currentUser;
+
+                  user.updateProfile({
+                    displayName: nombre,
+                  }).then(function() {
+                    // Update successful.
+                  }).catch(function(error) {
+                    // An error happened.
+                  });
+                  app.dialog.close();
+                  localStorage.setItem("activo", null);
+                  app.dialog.create({
+                    title: 'Sesión creada con éxito',
+                    text: 'Porfavor de iniciar sesión',
+                    buttons: [{
+                      text: 'Ok',
+                      onClick: () => {
+                        app.popup.close();
+                      }
+                    }, ],
+                  }).open();
+                })
+                .catch(function(error) {
+                  console.error("Error writing document: ", error);
+                });
+            } else {
+              // No user is signed in.
+            }
+
+          }).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            app.dialog.alert(errorMessage);
+            // ...
+          });
+
+        }
+
+      }
+
+    },
+    on: {
+      pageInit: function() {
+
+
+
+
+      },
+    },
+  };
+</script>

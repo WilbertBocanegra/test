@@ -1,0 +1,314 @@
+<template>
+  <div class="page" data-name="perfil">
+    <div class="navbar no-shadow">
+      <div class="navbar-inner sliding">
+        <div class="title">Perfil</div>
+      </div>
+    </div>
+    <div class="page-content">
+      {{#if loading}}
+        <div class="block-title"></div>
+        <div class="block block-strong align-items-stretch text-align-center no-hairlines">
+          <div class="row text-align-center">
+            <div class="col-100">
+              <div class="preloader confi-preloader color-multi"></div>
+            </div>
+          </div>
+        </div>
+      {{else}}
+        {{#each perfil}}
+
+          <div class="card demo-card-header-pic card-expandable card-prevent-open " style="height:175px;">
+            <div style="background-image:url('https://concepto.de/wp-content/uploads/2015/03/software-1-e1550080097569.jpg');" class="padding-bottom lazy lazy-fade-in demo-lazy card-header align-items-flex-end ">
+              {{nombre}}</div>
+            <!--  <div class="card-content card-content-padding">
+            <p class="date">Posted on January 21, 2015</p>
+            <p>Quisque eget vestibulum nulla. Quisque quis dui quis ex ultricies efficitur vitae non felis. Phasellus quis nibh hendrerit...</p>
+          </div>
+          <div class="card-footer"><a href="#" class="link">Like</a><a href="#" class="link">Read more</a></div>-->
+          </div>
+          <div class="list">
+            <ul>
+              <li>
+                <div class="item-content">
+                  <div class="item-media"><i class="icon f7-icons text-color-teal">barcode</i></div>
+                  <div class="item-inner">
+                    <div class="item-title">Matricula: {{matricula}}</div>
+                  </div>
+                </div>
+              </li>
+              {{#if verificado}}
+                <li>
+                  <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons text-color-green">check</i></div>
+                    <div class="item-inner">
+                      <div class="item-title text-color-green">Cuenta verificada</div>
+                    </div>
+                  </div>
+                </li>
+              {{else}}
+                <li>
+                  <div class="item-content">
+                    <div class="item-media"><i class="icon f7-icons text-color-red">close</i></div>
+                    <div class="item-inner">
+                      <div class="item-title text-color-red">Cuenta no verificada</div>
+                    </div>
+                  </div>
+                </li>
+              {{/if}}
+            </ul>
+          </div>
+          <div class="block-title text-align-center  margin-top">Estas inscrito a:</div>
+          <div class="block display-flex justify-content-space-between align-items-flex-start block-title block-title-medium">
+            <div class="flex-shrink-0">Carrera</div>
+            <div class="align-self-flex-end">Grupo</div>
+          </div>
+          <div class="block display-flex justify-content-space-between align-items-flex-start block-title block-title-medium margin-left margin-right ">
+            <div class="flex-shrink-0">
+              <div class="chip color-teal">
+                <div class="chip-label">
+                  {{#if carrera}}
+                    {{carrera}}
+                  {{else}}
+                    Vacio
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+            <div class="align-self-flex-end">
+              <div class="chip color-teal">
+                <div class="chip-label">
+                  {{#if grupo}}
+                    {{grupo}}
+                  {{else}}
+                    Vacio
+                  {{/if}}</div>
+              </div>
+            </div>
+          </div>
+          {{#if grupo}}
+            <div class="">
+            </div>
+          {{else}}
+            <div class="block">
+              <a href="/seleccionargrupo/" class="button button-raised button-round " data-view=".view-main">Seleccionar Grupo</a>
+            </div>
+          {{/if}}
+          <div class="list">
+            <ul>
+              <li>
+                <a href="#" class="item-link item-content no-chevron" @click="cerrarsesion">
+                  <div class="item-media"><i class="icon f7-icons color-red size-25 text-color-teal">exit</i></div>
+                  <div class="item-inner">
+                    <div class="item-title">Cerrar Sesion</div>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
+        {{/each}}
+      {{/if}}
+      <!-- inicio
+      <div class="list">
+        <ul>
+          {{#each perfil}}
+            <li>
+              <div class="item-content">
+                <div class="item-media"><i class="icon f7-icons color-red size-40">person_round_fill</i></div>
+                <div class="item-inner">
+                  <div class="item-title">{{nombre}}</div>
+                </div>
+              </div>
+            </li>
+            {{#if verificado}}
+              <li>
+                <div class="item-content">
+                  <div class="item-media"><i class="icon f7-icons color-green size-25">check</i></div>
+                  <div class="item-inner">
+                    <div class="item-title text-color-green">Cuenta verificada</div>
+                  </div>
+                </div>
+              </li>
+            {{else}}
+              <li>
+                <div class="item-content">
+                  <div class="item-media"><i class="icon f7-icons color-red size-25">close</i></div>
+                  <div class="item-inner">
+                    <div class="item-title text-color-red">Cuenta no verificada</div>
+                  </div>
+                </div>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+      <div class="block-title text-align-center  margin-top">Estas inscrito a:</div>
+      <div class="block display-flex justify-content-space-between align-items-flex-start block-title block-title-medium">
+        <div class="flex-shrink-0">Carrera</div>
+        <div class="align-self-flex-end">Grupo</div>
+      </div>
+      <div class="block display-flex justify-content-space-between align-items-flex-start block-title block-title-medium margin-left margin-right ">
+        {{#each perfil}}
+          <div class="flex-shrink-0">
+            <div class="chip color-teal">
+              <div class="chip-label">
+                {{#if carrera}}
+                  {{carrera}}
+                {{else}}
+                  Vacio
+                {{/if}}
+              </div>
+            </div>
+          </div>
+          <div class="align-self-flex-end">
+            <div class="chip color-teal">
+              <div class="chip-label">
+                {{#if grupo}}
+                  {{grupo}}
+                {{else}}
+                  Vacio
+                {{/if}}</div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+      {{#each perfil}}
+        {{#if grupo}}
+          <div class="">
+          </div>
+        {{else}}
+          <div class="block">
+            <a href="/seleccionargrupo/" class="button button-raised button-round " data-view=".view-main">Seleccionar Grupo</a>
+          </div>
+        {{/if}}
+      {{/each}}
+      <div class="list">
+        <ul>
+          <li>
+            <a href="#" class="item-link item-content no-chevron" @click="cerrarsesion">
+              <div class="item-media"><i class="icon f7-icons color-red size-25">exit</i></div>
+              <div class="item-inner">
+                <div class="item-title">Cerrar Sesion</div>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+       Termina -->
+    </div>
+  </div>
+</template>
+
+<script>
+  return {
+    data: function() {
+      return {
+        perfil: [],
+        loading: true
+      }
+    },
+    methods: {
+      cerrarsesion: () => {
+        app.dialog.create({
+          title: '',
+          text: '¿Desea cerrar sesion?',
+          buttons: [{
+              text: 'No',
+            },
+            {
+              text: 'Si',
+              onClick: () => {
+                app.dialog.preloader('Cerrando Sesión');
+
+                firebase.auth().signOut().then(function() {
+                  // Sign-out successful.
+                  localStorage.setItem("activo", null);
+                  app.dialog.close();
+                  mainView.router.navigate('/');
+                }).catch(function(error) {
+                  // An error happened.
+                });
+
+              }
+            },
+          ],
+        }).open();
+      }
+    },
+    on: {
+      pageInit: function() {
+        var self = this;
+        var app = self.$app;
+        let _perfil = [];
+        var storageRef = storage.ref();
+
+        var name, email, photoUrl, uid, emailVerified;
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            name = user.displayName;
+            email = user.email;
+            emailVerified = user.emailVerified;
+            photoURL = user.photoURL;
+            isAnonymous = user.isAnonymous;
+            uid = user.uid;
+            providerData = user.providerData;
+            var consulta_perfil = db.collection("usuarios").doc(uid);
+            consulta_perfil.get().then(function(doc) {
+              if (doc.exists) {
+
+                /*var starsRef = storageRef.child(doc.data().carrera + '.jpg');
+                // Get the download URL
+                starsRef.getDownloadURL().then(function(url) {
+                  // Insert url into an <img> tag to "download"*/
+
+
+
+                _perfil.push({
+                  carrera: doc.data().carrera,
+                  grupo: doc.data().grupo,
+                  nombre: doc.data().nombre,
+                  verificado: emailVerified,
+                  matricula: doc.data().matricula,
+
+                })
+                self.$setState({
+                  perfil: _perfil,
+                });
+                self.$setState({
+                  loading: false
+                });
+                /*
+                }).catch(function(error) {
+                  // A full list of error codes is available at
+                  // https://firebase.google.com/docs/storage/web/handle-errors
+                  switch (error.code) {
+                    case 'storage/object-not-found':
+                      // File doesn't exist
+                      break;
+                    case 'storage/unauthorized':
+                      // User doesn't have permission to access the object
+                      break;
+                    case 'storage/canceled':
+                      // User canceled the upload
+                      break;
+                    case 'storage/unknown':
+                      // Unknown error occurred, inspect the server response
+                      break;
+                  }
+                });*/
+              } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+              }
+            }).catch(function(error) {
+              console.log("Error getting document:", error);
+            });
+          } else {
+            // User is signed out.
+          }
+        });
+
+      },
+    },
+  };
+</script>

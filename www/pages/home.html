@@ -1,0 +1,129 @@
+<template>
+  <div class="page" data-name="home">
+    <div class="views tabs">
+
+      <div class="toolbar tabbar tabbar-labels toolbar-bottom">
+        <div class="toolbar-inner">
+          <a href="#view-home" class="tab-link ">
+            <i class="icon f7-icons">world<span class="badge color-red">Nuevos</span></i>
+            <span class="tabbar-label">Noticias</span>
+          </a>
+          <a href="#view-mihorario" class="tab-link tab-link-active">
+            <i class="icon f7-icons">calendar_today</i>
+            <span class="tabbar-label">Mi Horario</span>
+          </a>
+
+
+          <a href="#view-perfil" class="tab-link">
+            <i class="icon f7-icons">person</i>
+            <span class="tabbar-label">Mi cuenta</span>
+          </a>
+        </div>
+      </div>
+
+      <div id="view-home" class="view view-main tab">
+        <!-- Page, data-name contains page name which can be used in page callbacks -->
+        <div class="page" data-name="home">
+          <!-- Top Navbar -->
+          <div class="navbar no-shadow">
+            <div class="navbar-inner sliding">
+              <div class="title">Noticias</div>
+            </div>
+          </div>
+          <!-- Scrollable page content-->
+          <div class="page-content">
+            {{#if loading}}
+              <div class="block-title"></div>
+              <div class="block-title text-align-center">
+                <div class="preloader confi-preloader color-multi"></div>
+              </div>
+
+            {{else}}
+
+              {{#each noticias}}
+                <div class="card card-expandable" data-backdrop="false" style="height:175px;">
+                  <div class="card-content ">
+                    <div class="bg-color-teal width-auto" style="height: 250px">
+                      <div class="card-header text-color-white display-block margin-right	">
+                        {{campo}}
+                        <br>
+                        <small style="opacity: 0.7;">{{brevedescripcion}}</small>
+                      </div>
+                      <a href="#" class="link card-close card-opened-fade-in color-white" style="position: absolute; right: 15px; top: 15px">
+                        <i class="icon f7-icons">close_round_fill</i>
+                      </a>
+                    </div>
+                    <div class="card-content-padding">
+                      <p>{{descripcion}}</p>
+                      <p>
+                        <a href="#" class="button button-fill button-round button-large card-close color-teal">Cerrar</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              {{/each}}
+            {{/if}}
+
+
+
+          </div>
+        </div>
+      </div>
+      <!-- Mihorario View -->
+      <div id="view-mihorario" class="view tab tab-active">
+        <!-- Settings page will be loaded here dynamically from /settings/ route -->
+      </div>
+      <!-- Settings View -->
+      <div id="view-perfil" class="view tab">
+        <!-- Settings page will be loaded here dynamically from /settings/ route -->
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  return {
+    data: function() {
+      return {
+        noticias: [],
+        loading: true,
+      }
+    },
+    on: {
+      pageInit: function() {
+        var self = this;
+        var app = self.$app;
+        let _noticias = [];
+        var homeView = app.views.create('#view-home', {
+          url: '/'
+        });
+
+        var settingsView = app.views.create('#view-perfil', {
+          url: '/perfil/'
+        });
+
+        var mihorarioView = app.views.create('#view-mihorario', {
+          url: '/mihorario/'
+        });
+
+        db.collection("noticias").get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+
+            _noticias.push({
+              brevedescripcion: doc.data().brevedescripcion,
+              campo: doc.data().campo,
+              descripcion: doc.data().descripcion
+            })
+            self.$setState({
+              noticias: _noticias,
+            });
+            self.$setState({
+              loading: false
+            });
+          });
+        });
+
+
+      },
+    },
+  };
+</script>

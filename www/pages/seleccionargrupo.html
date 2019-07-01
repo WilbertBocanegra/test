@@ -1,0 +1,333 @@
+<template>
+  <div class="page" data-name="seleccionargrupo">
+    <div class="navbar no-shadow">
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a href="#" class="link back">
+            <i class="icon icon-back"></i>
+          </a>
+        </div>
+        <div class="title">Grupos</div>
+        <div class="right">
+          <a href="#" class="link popover-open" data-popover=".popover-links">
+            <i class="icon f7-icons">more_vertical_fill</i>
+          </a>
+        </div>
+      </div>
+    </div>
+    {{#if loading}}
+      <div class="">
+      </div>
+    {{else}}
+      <div class="fab fab-right-bottom color-teal">
+        <a href="#" @click="guardar">
+          <i class="icon f7-icons">check</i>
+        </a>
+      </div>
+    {{/if}}
+    <div class="page-content">
+
+      {{#if loading}}
+      <div class="block-title"></div>
+      <div class="block block-strong align-items-stretch text-align-center no-hairlines">
+        <div class="row text-align-center">
+          <div class="col-100">
+            <div class="preloader confi-preloader color-multi"></div>
+          </div>
+        </div>
+      </div>
+      {{else}}
+        <form class="list accordion-list" id="grupos">
+          <ul>
+            {{#each plan_estudio}}
+              <li class="accordion-item" id="{{carrera}}"><a href="#" class="item-content item-link">
+                  <div class="item-inner">
+                    <div class="item-title">{{carrera}}</div>
+                  </div>
+                </a>
+                <div class="accordion-item-content">
+                  {{#each grupos}}
+                    <div class="list">
+                      <ul>
+                        <li>
+                          <label class="item-radio item-content">
+                            <input type="radio" name="grupo" value="{{this}}" />
+                            <i class="icon icon-radio"></i>
+                            <div class="item-inner">
+                              <div class="item-title">
+                                {{this}}
+                              </div>
+
+                            </div>
+                          </label>
+                        </li>
+                      </ul>
+                    </div>
+
+                  {{/each}}
+
+                </div>
+              </li>
+            {{/each}}
+
+          </ul>
+        </form>
+      {{/if}}
+    </div>
+    <div class="popover popover-links">
+      <div class="popover-inner">
+        <div class="list">
+          <ul>
+            <li><a class="list-button item-link sheet-open popover-close" href="#" data-sheet=".demo-sheet-swipe-to-step">Información</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet-modal demo-sheet-swipe-to-step" style="height:auto">
+      <div class="sheet-modal-inner">
+        <div class="swipe-handler"></div>
+        <div class="sheet-modal-swipe-step" id="este">
+          <div class="page-content">
+            <div class="block-title block-title-large">Hola!</div>
+            <div class="block">
+
+              Bievenido! esta es una pequeña informacion para que puedas indentificar cual es tu grupo
+            </div>
+          </div>
+          <div class="padding-horizontal padding-bottom" id="este">
+            <div class="margin-top text-align-center">Desliza hacia arriba para empezar</div>
+          </div>
+        </div>
+        <div class="block">
+          Para poder identificar tu grupo, se necesitan tres pasos y tomaremos como ejemplo este grupo de la carrera de Software
+          <div class="list simple-list">
+            <ul>
+              <li>
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title text-align-center">S-1-1</div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <p>Paso 1: La letra <b>S</b> es la inicial de tu carrera en este caso tomamos como ejemplo Software en otras carreras aveces son mas iniciales</p>
+          <p> Paso 2: El numero <b>1</b> es el numero del grupo que hay de tu carrera ya que en una carrera pueden aver varios grupos</p>
+          <p> paso 3: El numero siguiente que en este caso es <b>1</b> es el numero del cuatrimestre que te encuestras cursando</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</template>
+
+<script>
+  return {
+    data: function() {
+      return {
+        plan_estudio: [],
+        loading: true,
+        accordion: "",
+      }
+    },
+    methods: {
+      guardar: function() {
+
+        var formData = app.form.convertToData('#grupos');
+        var grupo = formData.grupo;
+        var hola = false;
+        var carrera = this.accordion;
+        $$('input:checked').each(function() {
+          hola = true;
+        });
+
+        if (hola == true) {
+          app.dialog.create({
+            title: '',
+            text: 'Una vez seleccionado el grupo ya no podra escoger otro',
+            buttons: [{
+                text: 'Cancelar'
+              },
+              {
+                text: 'Aceptar',
+                onClick: function() {
+                  app.dialog.preloader('Guardando grupo','red');
+
+                  firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                      // User is signed in.
+                      var displayName = user.displayName;
+                      var email = user.email;
+                      var emailVerified = user.emailVerified;
+                      var photoURL = user.photoURL;
+                      var isAnonymous = user.isAnonymous;
+                      var uid = user.uid;
+                      var providerData = user.providerData;
+                      // ...
+                      var washingtonRef = db.collection("usuarios").doc(uid);
+
+                      // Set the "capital" field of the city 'DC'
+                      return washingtonRef.update({
+                          carrera: carrera,
+                          grupo: grupo
+                        })
+                        .then(function() {
+                          console.log("Document successfully updated!");
+                          app.dialog.close();
+                          mainView.router.back({
+                            force: true
+                          });
+                        })
+                        .catch(function(error) {
+                          // The document probably doesn't exist.
+                          console.error("Error updating document: ", error);
+                        });
+
+
+                    } else {
+                      // User is signed out.
+                      // ...
+                    }
+                  });
+
+
+                }
+              }
+            ],
+          }).open();
+
+        } else {
+          app.dialog.alert('No ha seleccionado un grupo, Por favor elija uno', '');
+        }
+
+
+        /*
+                var formData = app.form.convertToData('#grupos');
+                var grupo=formData.grupo;
+                   var isChecked = $$('input[type="radio"]').attr('value');
+
+        console.log(isChecked);
+        app.dialog.create({
+          title: '',
+          text: 'Una vez seleccionado el grupo ya no podra escoger otro',
+          buttons: [{
+              text: 'Cancelar'
+            },
+            {
+              text: 'Aceptar',
+              onClick: function() {
+                app.dialog.preloader('Guardando grupo');
+                setTimeout(function() {
+                  firebase.auth().onAuthStateChanged(function(user) {
+                  if (user) {
+                    var displayName = user.displayName;
+
+
+                    var selecciondelgrupo = db.collection("users").doc(displayName);
+                    return selecciondelgrupo.update({
+                      grupo: grupo,
+                    })
+                    .then(function() {
+                        console.log("Document successfully updated!");
+                        app.dialog.close();
+                        // Vertical Buttons
+                        app.dialog.create({
+                          title: '',
+                          text: 'Grupo guardado con exito',
+                          buttons: [{
+                            text: 'Aceptar',
+                          }, ],
+                        }).open();
+                        mainView.router.back();
+                    })
+                    .catch(function(error) {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                    });
+
+                          var email = user.email;
+                    var emailVerified = user.emailVerified;
+                    var photoURL = user.photoURL;
+                    var isAnonymous = user.isAnonymous;
+                    var uid = user.uid;
+                    var providerData = user.providerData;
+                  // ...
+                  } else {
+                  }
+                });
+                }, 3000);
+              }
+            }
+          ],
+        }).open();
+*/
+      },
+    },
+    on: {
+      pageInit: function() {
+        var self = this;
+        var app = self.$app;
+        let _plan_estudio = [];
+        self.sheetSwipeToStep = self.$app.sheet.create({
+          el: '.demo-sheet-swipe-to-step',
+          swipeToClose: true,
+          swipeToStep: true,
+          backdrop: true,
+        });
+
+        self.sheetSwipeToStep.open();
+
+        app.on('sheetOpened', function() {
+          app.statusbar.setBackgroundColor('#999999');
+        });
+        app.on('sheetClose', function() {
+          app.statusbar.setBackgroundColor('#ffffff');
+
+        });
+
+        app.on('sheetClosed', function() {
+          $$('#este').show();
+
+        });
+        app.on('sheetStepOpen', function() {
+          $$('#este').hide();
+        });
+        app.on('sheetStepClose', function() {
+          $$('#este').show();
+        });
+
+        app.on('accordionOpen', function(el) {
+          self.$setState({
+            accordion: el.id,
+          });
+        });
+
+        var carreras = db.collection("horarios/");
+        carreras.get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+              /*console.log(doc.id, "=>", doc.data().grupos);*/
+
+              _plan_estudio.push({
+                carrera: doc.id,
+                grupos: doc.data().grupos
+              })
+              self.$setState({
+                plan_estudio: _plan_estudio,
+              });
+              self.$setState({
+                loading: false
+              });
+            });
+
+          })
+          .catch(function(error) {
+            console.log("Error getting documents: ", error);
+          });
+
+      },
+    },
+  };
+</script>
